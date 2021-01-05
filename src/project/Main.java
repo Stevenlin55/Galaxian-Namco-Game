@@ -235,6 +235,7 @@ public class Main {
 		double rocketY = 0.1;  // y location of the rocket
 		double missleX = rocketX; //initial x location of missle 
 		double missleY = rocketY+0.06; //initial y location of missle
+		double missleFiredX = rocketX;
 		//
 		// This song will play in the background allowing your other work
 		//   to proceed. 
@@ -296,19 +297,22 @@ public class Main {
 			StdDraw.picture(rocketX, rocketY, "images/rocket.png", 0.1, 0.1);
 
 
-			if (checkFor(KeyEvent.VK_J)) { //if j is pressed, the missle teleports to where the pirate is
-				missleX = rocketX;
-				missleY = rocketY;
+			if (checkFor(KeyEvent.VK_J) && missleY == rocketY+0.06) { //if j is pressed, missle will be fired only if rocket has missle
+				missleFiredX= missleX;
 				missleFired = true; 
 				drawMissleAt(missleX,missleY);
 				
 			}
 
-			if (missleFired) missleY += 0.03; //the missle fired will be moving up at constant speed if the missle was fired
+			if (missleFired) {
+				missleX = missleFiredX; //makes sure the missle doesn't move with the rocket after being fired
+				missleY += 0.03; //the missle fired will be moving up at constant speed if the missle was fired
+				
+			}
 
 			if (missleY >= 1) { //when the fired missle is off screen, it'll remain off screen until j is pressed again
 				missleFired = false;
-				missleX = rocketX;
+				missleX = rocketX; 
 				missleY = rocketY+0.06;
 			}
 			drawMissleAt(missleX,missleY);
