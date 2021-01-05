@@ -2,9 +2,12 @@ package project;
 
 import java.awt.Color;
 import java.awt.event.KeyEvent;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Random;
 
 import edu.princeton.cs.introcs.StdDraw;
+
 
 
 public class Main {
@@ -13,14 +16,11 @@ public class Main {
 	 * @param time the seconds that have passed
 	 * @param points number of points the player has
 	 */
-	public static void scoreBox(int time, int points) {
-		int sec = time/33 + 1;
-		StdDraw.setPenColor(Color.RED);
-		StdDraw.filledRectangle(0.5, 0.9, 0.47, 0.1);
+	public static void scoreBox(int points) {
 		StdDraw.setPenColor(Color.WHITE);
-		StdDraw.text(0.5, 0.98, sec + " seconds have passed");
-		StdDraw.text(0.5, 0.94, "Press a to move left, d to move right, j to fire missles");
-		StdDraw.text(0.5, 0.86, "Points: " + points);
+		StdDraw.text(0.5, 0.94, "Press A to move left, D to move right, J to shoot missle");
+		StdDraw.setPenColor(Color.RED);
+		StdDraw.text(0.5, 0.86, "Score: " + points);
 	}
 
 	/**
@@ -230,11 +230,11 @@ public class Main {
 	public static void main(String[] args) {
 
 		StdDraw.enableDoubleBuffering();
-
-		double px = 0.5;  // x location of the demo point
-		double py = 0.05;  // y location of the demo point
-		double missleX = -1;
-		double missleY = 0;
+	
+		double rocketX = 0.5;  // x location of the rocket
+		double rocketY = 0.1;  // y location of the rocket
+		double missleX = rocketX; //initial x location of missle 
+		double missleY = rocketY+0.06; //initial y location of missle
 		//
 		// This song will play in the background allowing your other work
 		//   to proceed. 
@@ -253,23 +253,39 @@ public class Main {
 		double[][] treasureLocations = createRandomTreasureLocations(4);
 		double[][] diamondLocations = createRandomDiamondLocations(2);
 
-		boolean pirateFrozen = false; //whether or not pirate has hit an obstacle
-
-		while (true) {
+		boolean rocketFrozen = false; //whether or not pirate has hit an obstacle
+		boolean missleFired = false; //whether or not J was pressed
+		boolean rocketLife1 = true;
+		boolean rocketLife2= true;
+		boolean gameOver = false;
+		
+		while (gameOver == false) {
 
 			StdDraw.clear();
 
-			StdDraw.picture(0.5, 0.5, "images/underwater.jpg", 1.2, 1.2);
+			StdDraw.picture(0.5, 0.5, "images/space.jpg", 1.2, 1.2);
+			StdDraw.setPenColor(Color.WHITE);
+			StdDraw.text(0.08, 0.14, "Lives left");
+			
+			if (rocketLife1) StdDraw.picture(0.06, 0.09, "images/rocket.png", 0.06, 0.06);
+			
+			if(rocketLife1 == false && rocketLife2 == false) gameOver = true; //instead of having it quit right away, lets have an explosino and then game over with score. This can be tracked with a timer too
+			if (rocketLife2) StdDraw.picture(0.1, 0.09, "images/rocket.png", 0.06, 0.06);
+			
+			scoreBox(points);//keeps track of scores
 
-			scoreBox(time,points);//draws the box at the top and keeps track of scores
-
-
+			if (checkFor(KeyEvent.VK_W)) { //move left
+				rocketY = rocketY + 0.005;
+				missleX= rocketX; //missle moves with rocket
+			} 
 
 			if (checkFor(KeyEvent.VK_A)) { //move left
-				px = px - 0.005;
-			}
+				rocketX = rocketX - 0.005;
+				missleX= rocketX; //missle moves with rocket
+			} 
 			if (checkFor(KeyEvent.VK_D)) { //move right
-				px = px + 0.005;
+				rocketX = rocketX + 0.005;
+				missleX= rocketX; //missle moves with rocket
 			}
 
 
@@ -277,36 +293,39 @@ public class Main {
 			// The pirate
 			//
 			StdDraw.setPenColor(Color.BLACK);
-			StdDraw.filledCircle(px, py, .03);	
-
+			StdDraw.picture(rocketX, rocketY, "images/rocket.png", 0.1, 0.1);
 
 
 			if (checkFor(KeyEvent.VK_J)) { //if j is pressed, the missle teleports to where the pirate is
-				missleX = px;
-				missleY = py;
+				missleX = rocketX;
+				missleY = rocketY;
+				missleFired = true; 
 				drawMissleAt(missleX,missleY);
+				
 			}
 
-			missleY += 0.01; //the missle fired will be moving up at constant speed
+			if (missleFired) missleY += 0.03; //the missle fired will be moving up at constant speed if the missle was fired
 
 			if (missleY >= 1) { //when the fired missle is off screen, it'll remain off screen until j is pressed again
-				missleX = -1;
-				missleY = 0;
+				missleFired = false;
+				missleX = rocketX;
+				missleY = rocketY+0.06;
 			}
 			drawMissleAt(missleX,missleY);
 
 			//check if there's a collision between pirate and obstacle
-			if (rockPirateCollision(px,py,rockLocations)) {
+			if (rockPirateCollision(rocketX,rocketY,rockLocations)) {
 
 				//the for loop below will go through the rockLocations array and check which rock was involved in collision and moves them off screen
 				for (int i = 0; i < 12; i++) {
-					if (Math.sqrt(Math.pow((rockLocations[i][0]-px), 2) + Math.pow((rockLocations[i][1]-py),2)) <= 0.045+0.03) {
+					if (Math.sqrt(Math.pow((rockLocations[i][0]-rocketX), 2) + Math.pow((rockLocations[i][1]-rocketY),2)) <= 0.045+0.03) {
 						rockLocations[i][0] = -1;
 						rockLocations[i][1] = -1;
 					}
 				}
 				--points; //decrease points by 1 every time the pirate hits a rock
-				pirateFrozen = true;		
+				if (rocketLife2 == false) rocketLife1 = false; //if it only has one life left, lose its last life
+				rocketLife2 = false; //lose its first life first
 			}
 
 			if (rockMissleCollision(missleX,missleY,rockLocations)) {
@@ -314,45 +333,47 @@ public class Main {
 				//the for loop below will go through the rockLocations array and check which rock was involved in collision and moves them off screen, along with missle off screen
 				for (int i = 0; i < 12; i++) {
 					if (Math.sqrt(Math.pow((rockLocations[i][0]-missleX), 2) + Math.pow((rockLocations[i][1]-missleY),2)) <= 0.045+0.007) {
-						missleX = -1;
-						missleY = 0;
+						missleFired = false;
+						missleX = rocketX;
+						missleY = rocketY+0.06;
 						rockLocations[i][0] = -1;
 						rockLocations[i][1] = -1;
 
 					}
 				}
+				points++;
 			}
 
 			//check if there's a collision between pirate and treasure
-			if (treasureCollision(px,py,treasureLocations)) {
+			if (treasureCollision(rocketX,rocketY,treasureLocations)) {
 
 				//the for loop below will go through the treasureLocations array and check which treasure was involved in collision and moves them off screen
 				for (int i = 0; i < 4; i++) {
-					if (Math.sqrt(Math.pow((treasureLocations[i][0]-px), 2) + Math.pow((treasureLocations[i][1]-py),2)) <= 0.045+0.03) {
+					if (Math.sqrt(Math.pow((treasureLocations[i][0]-rocketX), 2) + Math.pow((treasureLocations[i][1]-rocketY),2)) <= 0.045+0.03) {
 						treasureLocations[i][0] = -1;
 						treasureLocations[i][1] = -1;
 					}
 				}
 				++points; //increase points by 1 when pirate gets a treasure chest
 			}
-			if (pirateFrozen){ //if the pirate is frozen after hitting obstacle
+			if (rocketFrozen){ //if the pirate is frozen after hitting obstacle
 				if ((frozenTime/33+1) == 2) { //after two seconds, the pirate will start moving again
-					pirateFrozen = false;
+					rocketFrozen = false;
 					frozenTime = 0; //reset frozenTime to 0 because not frozen anymore
 				}
 				time+=1;
 				frozenTime+=1;
 			}
-			if(pirateFrozen == false) {
-				py+= 0.001; //moves up the screen continuously at constant speed
+			if(rocketFrozen == false) {
+				
 				time+=1;
 			}
 			//check if there's a collision between pirate and diamond
-			if (diamondCollision(px,py,diamondLocations)) {
+			if (diamondCollision(rocketX,rocketY,diamondLocations)) {
 
 				//the for loop below will go through the diamondLocations array and check which diamond was involved in collision and moves them off screen
 				for (int i = 0; i < 2; i++) {
-					if (Math.sqrt(Math.pow((diamondLocations[i][0]-px), 2) + Math.pow((diamondLocations[i][1]-py),2)) <= 0.02+0.03) {
+					if (Math.sqrt(Math.pow((diamondLocations[i][0]-rocketX), 2) + Math.pow((diamondLocations[i][1]-rocketY),2)) <= 0.02+0.03) {
 						diamondLocations[i][0] = -1;
 						diamondLocations[i][1] = -1;
 					}
@@ -360,6 +381,8 @@ public class Main {
 				points+=2; //increase points by 2 when pirate gets a diamond
 
 			}
+			
+		
 			drawTreasuresAt(treasureLocations);
 			drawDiamondsAt(diamondLocations);
 			drawRocksAt(rockLocations);
@@ -368,7 +391,7 @@ public class Main {
 
 			StdDraw.show();  
 			StdDraw.pause(10);   // 1/100 of a second
-
+			
 		}
 
 	}
