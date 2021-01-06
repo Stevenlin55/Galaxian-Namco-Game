@@ -32,125 +32,56 @@ public class Main {
 	public static double randomInRange(double start, double stop) {		
 		return (Math.random()*(stop-start)) +start;
 	}
-	/**
-	 * Double array of bubble locations. The rows are the bubbles, the columns are the x or y position of the bubbles
-	 * @param n number of bubbles
-	 * @return returns a double array of bubble locations
-	 */
-	public static double[][] createRandomBubbleLocations(int n) {
-		double[][] bubbleLocations = new double[n][2];
-		for (int i = 0; i<n; i++) {
-			bubbleLocations[i][0] = randomInRange(0,1);
-			bubbleLocations[i][1] = randomInRange(-0.4,0);
-		}
-		return bubbleLocations;
-	}
-
-	/**
-	 * Takes array of bubbleLocations and changes their y positions only
-	 * @param bubbleLocations bubbleLocations array
-	 */
-	public static void advanceBubbles(double[][] bubbleLocations) {
-		for (int i = 0; i < 20; i++) {
-			double y = randomInRange(0,0.01);
-			bubbleLocations[i][1] = bubbleLocations[i][1] + y;
-			if (bubbleLocations[i][1] >=1) {
-				bubbleLocations[i][1] = -0.2;
-			}
-		}
-	}
-
-	/**
-	 * Draws the bubbles at the position defined in bubbleLocations array
-	 * @param bubbleLocations bubbleLocations array
-	 */
-	public static void drawBubblesAt(double[][] bubbleLocations) {
-
-		for (int i = 0; i < 20; i++) {
-			drawBubbles(bubbleLocations[i][0], bubbleLocations[i][1], 0.015);
-		}
-
-	}
-	/**
-	 * Draws the bubbles
-	 * @param x x coordinate
-	 * @param y y coordinate
-	 * @param radius radius of bubble
-	 */
-	public static void drawBubbles(double x, double y, double radius) {
-		StdDraw.setPenColor((int)randomInRange(0,255),(int)randomInRange(0,255),(int)randomInRange(0,255));
-		StdDraw.filledCircle(x, y,radius);
-	}
-
-	/**
-	 * Creates random locations for the treasures
-	 * @param n number of treasure chests
-	 * @return 2D array of treasure locations
-	 */
-	public static double[][] createRandomTreasureLocations(int n) {
-		double[][] treasureLocations = new double[n][2];
-		for (int i = 0; i<n; i++) {
-			treasureLocations[i][0] = randomInRange(0,1);
-			treasureLocations[i][1] = randomInRange(0.2,0.7);
-		}
-		return treasureLocations;
-	}
-
-	/**
-	 * Creates random locations for the diamonds
-	 * @param n number of diamonds
-	 * @return 2D array of diamond locations
-	 */
-	public static double[][] createRandomDiamondLocations(int n) {
-		double[][] diamondLocations = new double[n][2];
-		for (int i = 0; i<n; i++) {
-			diamondLocations[i][0] = randomInRange(0,1);
-			diamondLocations[i][1] = randomInRange(0.2,0.7);
-		}
-		return diamondLocations;
-	}
+	
 
 	/**
 	 * Creates random rock locations
-	 * @param n number of rocks
+	 * @param n number of 
 	 * @return 2D array of rock locations
 	 */
-	public static double[][] createRandomRockLocations(int n) {
-		double[][] rockLocations = new double[n][2];
+	public static double[][] createRandomAlienLocations(int n) {
+		double[][] alienLocations = new double[n][2];
 		for (int i = 0; i<n; i++) {
-			rockLocations[i][0] = randomInRange(0,1);
-			rockLocations[i][1] = randomInRange(0.2,0.7);
+			alienLocations[i][0] = randomInRange(0.3,0.97);
+			alienLocations[i][1] = randomInRange(0.5,0.7);
 		}
-		return rockLocations;
+		return alienLocations;
 
 	}
 
 	/**
-	 * Draws the treasure chests at locations defined in array
-	 * @param treasureLocations array of treasure locations
+	 * Takes array of alienLocations and changes their y positions only
+	 * @param bubbleLocations bubbleLocations array
 	 */
-	public static void drawTreasuresAt(double[][] treasureLocations) {
-		for (int i = 0 ; i < 4 ; i++) {
-			StdDraw.picture(treasureLocations[i][0], treasureLocations[i][1], "images/treasure.png", 0.1, 0.1);
+	public static void advanceGreenAliens(double[][] alienLocations) {
+		for (int i = 0; i < 12; i++) {
+			double y = randomInRange(-0.005,0);
+			double x = randomInRange(-0.015,0.015);
+		
+			if (alienLocations[i][0] <= 0.03) {
+				alienLocations[i][0] -= x;
+			}
+			else if (alienLocations[i][0] >= 0.97){
+				alienLocations[i][0] -= x;
+			}
+			else {
+				alienLocations[i][0] += x;
+			}
+			alienLocations[i][1] = alienLocations[i][1] + y;
+			if (alienLocations[i][1] <=0) {
+				alienLocations[i][1] = 1.2;
+			}
+			
 		}
 	}
 	/**
-	 * Draws the diamonds at locations defined in array
-	 * @param diamondLocations array of diamond locations
+	 * Draws aliens at locations defined in array
+	 * @param greenAlienLocations array of rock locations
 	 */
-	public static void drawDiamondsAt(double[][] diamondLocations) {
-		for (int i = 0 ; i < 2 ; i++) {
-			StdDraw.picture(diamondLocations[i][0], diamondLocations[i][1], "images/diamond.png", 0.1, 0.1);
-		}
-	}
-	/**
-	 * Draws rocks at locations defined in array
-	 * @param rockLocations array of rock locations
-	 */
-	public static void drawRocksAt(double[][] rockLocations) {
+	public static void drawGreenAliensAt(double[][] greenAlienLocations) {
 
 		for (int i=0; i<12; i++) {
-			StdDraw.picture(rockLocations[i][0], rockLocations[i][1], "images/rock.png", 0.12, 0.12);
+			StdDraw.picture(greenAlienLocations[i][0], greenAlienLocations[i][1], "images/greenAlien.png", 0.08, 0.08);
 		}
 	}
 
@@ -167,12 +98,12 @@ public class Main {
 	 * Whether or not the pirate hit the obstacle
 	 * @param pirateX x-coordinate of pirate
 	 * @param pirateY y-coordinate of pirate
-	 * @param rockLocations array of rock locations
+	 * @param greenAlienLocations array of rock locations
 	 * @return true if there is a collision, false if there isn't
 	 */
-	public static boolean rockPirateCollision(double pirateX,double pirateY, double[][] rockLocations) {
+	public static boolean alienRocketCollision(double pirateX,double pirateY, double[][] greenAlienLocations) {
 		for (int i = 0; i < 12; i++) {
-			if (Math.sqrt(Math.pow((rockLocations[i][0]-pirateX), 2) + Math.pow((rockLocations[i][1]-pirateY),2)) <= 0.045+0.03) {
+			if (Math.sqrt(Math.pow((greenAlienLocations[i][0]-pirateX), 2) + Math.pow((greenAlienLocations[i][1]-pirateY),2)) <= 0.035+0.03) {
 				return true;
 			}
 		}
@@ -187,46 +118,16 @@ public class Main {
 	 * @param rockLocations array of rock locations
 	 * @return true if there is a collision, false if there isn't
 	 */
-	public static boolean rockMissleCollision(double missleX, double missleY, double[][] rockLocations) {
+	public static boolean alienMissleCollision(double missleX, double missleY, double[][] rockLocations) {
 		for (int i = 0; i < 12; i++) {
-			if (Math.sqrt(Math.pow((rockLocations[i][0]-missleX), 2) + Math.pow((rockLocations[i][1]-missleY),2)) <= 0.045+0.007) {
+			if (Math.sqrt(Math.pow((rockLocations[i][0]-missleX), 2) + Math.pow((rockLocations[i][1]-missleY),2)) <= 0.035+0.007) {
 				return true;
 			}
 		}
 		return false; 
 	}
 
-	/**
-	 * Whether or not the pirate hit the treaure
-	 * @param pirateX x-coordinate of pirate
-	 * @param pirateY y-coordinate of pirate
-	 * @param rockLocations array of treasure locations
-	 * @return true if there is a collision, false if there isn't
-	 */
-	public static boolean treasureCollision(double pirateX,double pirateY, double[][] treasureLocations) {
-		for (int i = 0; i < 4; i++) {
-			if (Math.sqrt(Math.pow((treasureLocations[i][0]-pirateX), 2) + Math.pow((treasureLocations[i][1]-pirateY),2)) <= 0.045+0.03) {
-				return true;
-			}
-		}
-		return false;
-	}
-	/**
-	 * Whether or not the pirate hit the diamond
-	 * @param pirateX x-coordinate of pirate
-	 * @param pirateY y-coordinate of pirate
-	 * @param rockLocations array of diamond locations
-	 * @return true if there is a collision, false if there isn't
-	 */
-	public static boolean diamondCollision(double pirateX,double pirateY, double[][] diamondLocations) {
-		for (int i = 0; i < 2; i++) {
-			if (Math.sqrt(Math.pow((diamondLocations[i][0]-pirateX), 2) + Math.pow((diamondLocations[i][1]-pirateY),2)) <= 0.02+0.03) {
-				return true;
-			}
-		}
-		return false;
-	}
-
+	
 	public static void main(String[] args) {
 
 		StdDraw.enableDoubleBuffering();
@@ -249,11 +150,9 @@ public class Main {
 		int frozenTime = 0; //time that will be used to keep track of how long the pirate has been frozen for
 		int points = 0;
 
-		double[][] bubbleLocations = createRandomBubbleLocations(20);
-		double[][] rockLocations = createRandomRockLocations(12);
-		double[][] treasureLocations = createRandomTreasureLocations(4);
-		double[][] diamondLocations = createRandomDiamondLocations(2);
-
+	
+		double[][] greenAlienLocations = createRandomAlienLocations(12);
+		
 		boolean rocketFrozen = false; //whether or not pirate has hit an obstacle
 		boolean missleFired = false; //whether or not J was pressed
 		boolean rocketLife1 = true;
@@ -275,16 +174,12 @@ public class Main {
 			
 			scoreBox(points);//keeps track of scores
 
-			if (checkFor(KeyEvent.VK_W)) { //move left
-				rocketY = rocketY + 0.005;
-				missleX= rocketX; //missle moves with rocket
-			} 
 
-			if (checkFor(KeyEvent.VK_A)) { //move left
+			if (checkFor(KeyEvent.VK_A) && rocketX>=0.03) { //move left if A is pressed and rocket is not too far left
 				rocketX = rocketX - 0.005;
 				missleX= rocketX; //missle moves with rocket
 			} 
-			if (checkFor(KeyEvent.VK_D)) { //move right
+			if (checkFor(KeyEvent.VK_D) && rocketX<=0.97) { //move right if D is pressed and rocket is not too far right
 				rocketX = rocketX + 0.005;
 				missleX= rocketX; //missle moves with rocket
 			}
@@ -318,13 +213,13 @@ public class Main {
 			drawMissleAt(missleX,missleY);
 
 			//check if there's a collision between pirate and obstacle
-			if (rockPirateCollision(rocketX,rocketY,rockLocations)) {
+			if (alienRocketCollision(rocketX,rocketY,greenAlienLocations)) {
 
 				//the for loop below will go through the rockLocations array and check which rock was involved in collision and moves them off screen
 				for (int i = 0; i < 12; i++) {
-					if (Math.sqrt(Math.pow((rockLocations[i][0]-rocketX), 2) + Math.pow((rockLocations[i][1]-rocketY),2)) <= 0.045+0.03) {
-						rockLocations[i][0] = -1;
-						rockLocations[i][1] = -1;
+					if (Math.sqrt(Math.pow((greenAlienLocations[i][0]-rocketX), 2) + Math.pow((greenAlienLocations[i][1]-rocketY),2)) <= 0.045+0.03) {
+						greenAlienLocations[i][0] = -1;
+						greenAlienLocations[i][1] = -1;
 					}
 				}
 				--points; //decrease points by 1 every time the pirate hits a rock
@@ -332,34 +227,23 @@ public class Main {
 				rocketLife2 = false; //lose its first life first
 			}
 
-			if (rockMissleCollision(missleX,missleY,rockLocations)) {
+			if (alienMissleCollision(missleX,missleY,greenAlienLocations)) {
 
 				//the for loop below will go through the rockLocations array and check which rock was involved in collision and moves them off screen, along with missle off screen
 				for (int i = 0; i < 12; i++) {
-					if (Math.sqrt(Math.pow((rockLocations[i][0]-missleX), 2) + Math.pow((rockLocations[i][1]-missleY),2)) <= 0.045+0.007) {
+					if (Math.sqrt(Math.pow((greenAlienLocations[i][0]-missleX), 2) + Math.pow((greenAlienLocations[i][1]-missleY),2)) <= 0.045+0.007) {
 						missleFired = false;
 						missleX = rocketX;
 						missleY = rocketY+0.06;
-						rockLocations[i][0] = -1;
-						rockLocations[i][1] = -1;
+						greenAlienLocations[i][0] = -1;
+						greenAlienLocations[i][1] = -1;
 
 					}
 				}
 				points++;
 			}
 
-			//check if there's a collision between pirate and treasure
-			if (treasureCollision(rocketX,rocketY,treasureLocations)) {
-
-				//the for loop below will go through the treasureLocations array and check which treasure was involved in collision and moves them off screen
-				for (int i = 0; i < 4; i++) {
-					if (Math.sqrt(Math.pow((treasureLocations[i][0]-rocketX), 2) + Math.pow((treasureLocations[i][1]-rocketY),2)) <= 0.045+0.03) {
-						treasureLocations[i][0] = -1;
-						treasureLocations[i][1] = -1;
-					}
-				}
-				++points; //increase points by 1 when pirate gets a treasure chest
-			}
+		
 			if (rocketFrozen){ //if the pirate is frozen after hitting obstacle
 				if ((frozenTime/33+1) == 2) { //after two seconds, the pirate will start moving again
 					rocketFrozen = false;
@@ -372,27 +256,12 @@ public class Main {
 				
 				time+=1;
 			}
-			//check if there's a collision between pirate and diamond
-			if (diamondCollision(rocketX,rocketY,diamondLocations)) {
-
-				//the for loop below will go through the diamondLocations array and check which diamond was involved in collision and moves them off screen
-				for (int i = 0; i < 2; i++) {
-					if (Math.sqrt(Math.pow((diamondLocations[i][0]-rocketX), 2) + Math.pow((diamondLocations[i][1]-rocketY),2)) <= 0.02+0.03) {
-						diamondLocations[i][0] = -1;
-						diamondLocations[i][1] = -1;
-					}
-				}
-				points+=2; //increase points by 2 when pirate gets a diamond
-
-			}
+		
 			
 		
-			drawTreasuresAt(treasureLocations);
-			drawDiamondsAt(diamondLocations);
-			drawRocksAt(rockLocations);
-			drawBubblesAt(bubbleLocations);
-			advanceBubbles(bubbleLocations);
-
+			drawGreenAliensAt(greenAlienLocations);
+			advanceGreenAliens(greenAlienLocations);
+			
 			StdDraw.show();  
 			StdDraw.pause(10);   // 1/100 of a second
 			
