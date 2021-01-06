@@ -32,7 +32,7 @@ public class Main {
 	public static double randomInRange(double start, double stop) {		
 		return (Math.random()*(stop-start)) +start;
 	}
-	
+
 
 	/**
 	 * Creates random rock locations
@@ -57,7 +57,7 @@ public class Main {
 		for (int i = 0; i < 12; i++) {
 			double y = randomInRange(-0.005,0);
 			double x = randomInRange(-0.015,0.015);
-		
+
 			if (alienLocations[i][0] <= 0.03) {
 				alienLocations[i][0] -= x;
 			}
@@ -71,7 +71,7 @@ public class Main {
 			if (alienLocations[i][1] <=0) {
 				alienLocations[i][1] = 1.2;
 			}
-			
+
 		}
 	}
 	/**
@@ -96,14 +96,14 @@ public class Main {
 
 	/**
 	 * Whether or not the pirate hit the obstacle
-	 * @param pirateX x-coordinate of pirate
-	 * @param pirateY y-coordinate of pirate
+	 * @param rocketX x-coordinate of pirate
+	 * @param rocketY y-coordinate of pirate
 	 * @param greenAlienLocations array of rock locations
 	 * @return true if there is a collision, false if there isn't
 	 */
-	public static boolean alienRocketCollision(double pirateX,double pirateY, double[][] greenAlienLocations) {
+	public static boolean alienRocketCollision(double rocketX,double rocketY, double[][] greenAlienLocations) {
 		for (int i = 0; i < 12; i++) {
-			if (Math.sqrt(Math.pow((greenAlienLocations[i][0]-pirateX), 2) + Math.pow((greenAlienLocations[i][1]-pirateY),2)) <= 0.035+0.03) {
+			if (Math.sqrt(Math.pow((greenAlienLocations[i][0]-rocketX), 2) + Math.pow((greenAlienLocations[i][1]-rocketY),2)) <= 0.035+0.03) {
 				return true;
 			}
 		}
@@ -127,11 +127,11 @@ public class Main {
 		return false; 
 	}
 
-	
+
 	public static void main(String[] args) {
 
 		StdDraw.enableDoubleBuffering();
-	
+
 		double rocketX = 0.5;  // x location of the rocket
 		double rocketY = 0.1;  // y location of the rocket
 		double missleX = rocketX; //initial x location of missle 
@@ -150,15 +150,16 @@ public class Main {
 		int frozenTime = 0; //time that will be used to keep track of how long the pirate has been frozen for
 		int points = 0;
 
-	
+
 		double[][] greenAlienLocations = createRandomAlienLocations(12);
-		
+
 		boolean rocketFrozen = false; //whether or not pirate has hit an obstacle
 		boolean missleFired = false; //whether or not J was pressed
+		boolean hasMissle = true;
 		boolean rocketLife1 = true;
 		boolean rocketLife2= true;
 		boolean gameOver = false;
-		
+
 		while (gameOver == false) {
 
 			StdDraw.clear();
@@ -166,12 +167,12 @@ public class Main {
 			StdDraw.picture(0.5, 0.5, "images/space.jpg", 1.2, 1.2);
 			StdDraw.setPenColor(Color.WHITE);
 			StdDraw.text(0.08, 0.14, "Lives left");
-			
+
 			if (rocketLife1) StdDraw.picture(0.06, 0.09, "images/rocket.png", 0.06, 0.06);
-			
+
 			if(rocketLife1 == false && rocketLife2 == false) gameOver = true; //instead of having it quit right away, lets have an explosino and then game over with score. This can be tracked with a timer too
 			if (rocketLife2) StdDraw.picture(0.1, 0.09, "images/rocket.png", 0.06, 0.06);
-			
+
 			scoreBox(points);//keeps track of scores
 
 
@@ -195,44 +196,55 @@ public class Main {
 			if (checkFor(KeyEvent.VK_J) && missleY == rocketY+0.06) { //if j is pressed, missle will be fired only if rocket has missle
 				missleFiredX= missleX;
 				missleFired = true; 
+				hasMissle = false;
 				drawMissleAt(missleX,missleY);
-				
+
 			}
 
 			if (missleFired) {
 				missleX = missleFiredX; //makes sure the missle doesn't move with the rocket after being fired
 				missleY += 0.03; //the missle fired will be moving up at constant speed if the missle was fired
-				
+
 			}
 
 			if (missleY >= 1) { //when the fired missle is off screen, it'll remain off screen until j is pressed again
 				missleFired = false;
+				hasMissle= true;
 				missleX = rocketX; 
 				missleY = rocketY+0.06;
 			}
 			drawMissleAt(missleX,missleY);
 
-			//check if there's a collision between pirate and obstacle
+			//check if there's a collision between rocket and alien
 			if (alienRocketCollision(rocketX,rocketY,greenAlienLocations)) {
 
-				//the for loop below will go through the rockLocations array and check which rock was involved in collision and moves them off screen
+				//the for loop below will go through the alienLocations array and check which alien was involved in collision and moves them off screen
 				for (int i = 0; i < 12; i++) {
-					if (Math.sqrt(Math.pow((greenAlienLocations[i][0]-rocketX), 2) + Math.pow((greenAlienLocations[i][1]-rocketY),2)) <= 0.045+0.03) {
+					if (Math.sqrt(Math.pow((greenAlienLocations[i][0]-rocketX), 2) + Math.pow((greenAlienLocations[i][1]-rocketY),2)) <= 0.035+0.03) {
 						greenAlienLocations[i][0] = -1;
 						greenAlienLocations[i][1] = -1;
 					}
 				}
-				--points; //decrease points by 1 every time the pirate hits a rock
 				if (rocketLife2 == false) rocketLife1 = false; //if it only has one life left, lose its last life
 				rocketLife2 = false; //lose its first life first
 			}
 
 			if (alienMissleCollision(missleX,missleY,greenAlienLocations)) {
-
-				//the for loop below will go through the rockLocations array and check which rock was involved in collision and moves them off screen, along with missle off screen
+				if (hasMissle) {
+					for (int i = 0; i < 12; i++) {
+						if (Math.sqrt(Math.pow((greenAlienLocations[i][0]-missleX), 2) + Math.pow((greenAlienLocations[i][1]-missleY),2)) <= 0.035+0.007) {
+							greenAlienLocations[i][0] = -1;
+							greenAlienLocations[i][1] = -1;
+						}
+					}
+					if (rocketLife2 == false) rocketLife1 = false; //if it only has one life left, lose its last life
+					rocketLife2 = false; //lose its first life first
+				}
+				//the for loop below will go through the alienLocations array and check which rock was involved in collision and moves them off screen, along with returning missle back to the rocket
 				for (int i = 0; i < 12; i++) {
-					if (Math.sqrt(Math.pow((greenAlienLocations[i][0]-missleX), 2) + Math.pow((greenAlienLocations[i][1]-missleY),2)) <= 0.045+0.007) {
+					if (Math.sqrt(Math.pow((greenAlienLocations[i][0]-missleX), 2) + Math.pow((greenAlienLocations[i][1]-missleY),2)) <= 0.035+0.007) {
 						missleFired = false;
+						hasMissle = true;
 						missleX = rocketX;
 						missleY = rocketY+0.06;
 						greenAlienLocations[i][0] = -1;
@@ -240,10 +252,11 @@ public class Main {
 
 					}
 				}
+
 				points++;
 			}
 
-		
+
 			if (rocketFrozen){ //if the pirate is frozen after hitting obstacle
 				if ((frozenTime/33+1) == 2) { //after two seconds, the pirate will start moving again
 					rocketFrozen = false;
@@ -253,18 +266,18 @@ public class Main {
 				frozenTime+=1;
 			}
 			if(rocketFrozen == false) {
-				
+
 				time+=1;
 			}
-		
-			
-		
+
+
+
 			drawGreenAliensAt(greenAlienLocations);
 			advanceGreenAliens(greenAlienLocations);
-			
+
 			StdDraw.show();  
 			StdDraw.pause(10);   // 1/100 of a second
-			
+
 		}
 
 	}
