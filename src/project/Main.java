@@ -53,26 +53,41 @@ public class Main {
 	 * Takes array of alienLocations and changes their y positions only
 	 * @param bubbleLocations bubbleLocations array
 	 */
-	public static void advanceGreenAliens(double[][] alienLocations) {
-		for (int i = 0; i < 12; i++) {
-			double y = randomInRange(-0.005,0);
-			double x = randomInRange(-0.015,0.015);
-
-			if (alienLocations[i][0] <= 0.03) {
-				alienLocations[i][0] -= x;
-			}
-			else if (alienLocations[i][0] >= 0.97){
-				alienLocations[i][0] -= x;
-			}
-			else {
-				alienLocations[i][0] += x;
-			}
-			alienLocations[i][1] = alienLocations[i][1] + y;
-			if (alienLocations[i][1] <=0) {
-				alienLocations[i][1] = 1.2;
-			}
-
+	public static void advanceGreenAliens(double[][] alienLocations,int alienThatMoves, double rocketX,double rocketY) {
+		
+		if (alienLocations[alienThatMoves][1] > 1) { //if it is moved off screen, let it stay off screen
+			return;
 		}
+
+		double y = randomInRange(-0.005,0);
+		double x = 0;
+		
+		if (rocketX >alienLocations[alienThatMoves][0]) {
+			 x = (Math.sqrt(Math.pow((alienLocations[alienThatMoves][0]-rocketX), 2) + Math.pow((alienLocations[alienThatMoves][1]-rocketY),2)))/90.0;
+		}
+		else if (rocketX <alienLocations[alienThatMoves][0]) {
+			 x = -(Math.sqrt(Math.pow((alienLocations[alienThatMoves][0]-rocketX), 2) + Math.pow((alienLocations[alienThatMoves][1]-rocketY),2)))/90.0;
+		}
+		
+		
+		//next few lines of code will ensure that the aliens will not move off screen in the x direction
+		if (alienLocations[alienThatMoves][0] <= 0.03) {
+			alienLocations[alienThatMoves][0] -= x;
+		}
+		else if (alienLocations[alienThatMoves][0] >= 0.97){
+			alienLocations[alienThatMoves][0] -= x;
+		}
+		else {
+			alienLocations[alienThatMoves][0] += x; //this moves them in the x direction 
+		}
+		
+		alienLocations[alienThatMoves][1] = alienLocations[alienThatMoves][1] + y; //moves alien in y direction
+
+		if (alienLocations[alienThatMoves][1] <=0) {
+			alienLocations[alienThatMoves][1] = 1.2;
+		}
+		
+
 	}
 	/**
 	 * Draws aliens at locations defined in array
@@ -160,6 +175,9 @@ public class Main {
 		boolean rocketLife2= true;
 		boolean gameOver = false;
 
+		
+		
+		int alienThatMoves = (int)randomInRange(0,12);
 		while (gameOver == false) {
 
 			StdDraw.clear();
@@ -273,8 +291,12 @@ public class Main {
 
 
 			drawGreenAliensAt(greenAlienLocations);
-			advanceGreenAliens(greenAlienLocations);
+			advanceGreenAliens(greenAlienLocations,alienThatMoves,rocketX, rocketY);
 
+			if (greenAlienLocations[alienThatMoves][1] > 1) alienThatMoves = (int) randomInRange(0,12); //if the previous alien that was moving is off screen, then choose a different alien
+			
+			
+			
 			StdDraw.show();  
 			StdDraw.pause(10);   // 1/100 of a second
 
