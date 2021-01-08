@@ -53,39 +53,60 @@ public class Main {
 	 * Takes array of alienLocations and changes their y positions only
 	 * @param bubbleLocations bubbleLocations array
 	 */
-	public static void advanceGreenAliens(double[][] alienLocations,int alienThatMoves, double rocketX,double rocketY) {
+	public static void advanceGreenAliens(double[][] alienLocations, double[] nonFollowingAliensX, int alienThatFollows, double rocketX,double rocketY) {
+		boolean allOffScreen = false;
 		
-		if (alienLocations[alienThatMoves][1] > 1) { //if it is moved off screen, let it stay off screen
+		double movingAlienY1 = randomInRange(-0.005,0);
+		double movingAlienX = 0; 
+		
+		
+		for(int i = 0; i < 12; i++) {
+			if (i == alienThatFollows) { //if it is the alien that is moving 
+			}
+			else if (alienLocations[i][0] <= 0.03) {
+			 nonFollowingAliensX[i] *= -1;
+			 alienLocations[i][0] += nonFollowingAliensX[i];
+			}
+			else if (alienLocations[i][0] >= 0.97){
+			 nonFollowingAliensX[i] *= -1;
+			 alienLocations[i][0] += nonFollowingAliensX[i];
+			}
+			else {
+				alienLocations[i][0] += nonFollowingAliensX[i]; //this moves them in the x direction 
+			}
+		}
+		
+		
+		
+		if (alienLocations[alienThatFollows][1] > 1) { //if it is moved off screen, let it stay off screen
 			return;
 		}
-
-		double y = randomInRange(-0.005,0);
-		double x = 0;
 		
-		if (rocketX >alienLocations[alienThatMoves][0]) {
-			 x = (Math.sqrt(Math.pow((alienLocations[alienThatMoves][0]-rocketX), 2) + Math.pow((alienLocations[alienThatMoves][1]-rocketY),2)))/90.0;
+		if (rocketX >alienLocations[alienThatFollows][0]) { //if rocket is to the right of alien, alien will move in positive direction
+			 movingAlienX = (Math.sqrt(Math.pow((alienLocations[alienThatFollows][0]-rocketX), 2) + Math.pow((alienLocations[alienThatFollows][1]-rocketY),2)))/90.0;
 		}
-		else if (rocketX <alienLocations[alienThatMoves][0]) {
-			 x = -(Math.sqrt(Math.pow((alienLocations[alienThatMoves][0]-rocketX), 2) + Math.pow((alienLocations[alienThatMoves][1]-rocketY),2)))/90.0;
+		else if (rocketX <alienLocations[alienThatFollows][0]) { //if rocket is to the left of alien, alien will move in negative direction
+			 movingAlienX = -(Math.sqrt(Math.pow((alienLocations[alienThatFollows][0]-rocketX), 2) + Math.pow((alienLocations[alienThatFollows][1]-rocketY),2)))/90.0;
 		}
 		
 		
 		//next few lines of code will ensure that the aliens will not move off screen in the x direction
-		if (alienLocations[alienThatMoves][0] <= 0.03) {
-			alienLocations[alienThatMoves][0] -= x;
+		if (alienLocations[alienThatFollows][0] <= 0.03) {
+			alienLocations[alienThatFollows][0] -= movingAlienX;
 		}
-		else if (alienLocations[alienThatMoves][0] >= 0.97){
-			alienLocations[alienThatMoves][0] -= x;
+		else if (alienLocations[alienThatFollows][0] >= 0.97){
+			alienLocations[alienThatFollows][0] -= movingAlienX;
 		}
 		else {
-			alienLocations[alienThatMoves][0] += x; //this moves them in the x direction 
+			alienLocations[alienThatFollows][0] += movingAlienX; //this moves them in the x direction 
 		}
 		
-		alienLocations[alienThatMoves][1] = alienLocations[alienThatMoves][1] + y; //moves alien in y direction
+		alienLocations[alienThatFollows][1] = alienLocations[alienThatFollows][1] + movingAlienY1; //moves alien in y direction
 
-		if (alienLocations[alienThatMoves][1] <=0) {
-			alienLocations[alienThatMoves][1] = 1.2;
+		if (alienLocations[alienThatFollows][1] <=0) {
+			alienLocations[alienThatFollows][1] = 1.2;  //move alien that follows off screen
 		}
+		
 		
 
 	}
@@ -166,8 +187,12 @@ public class Main {
 		int points = 0;
 
 
-		double[][] greenAlienLocations = createRandomAlienLocations(12);
-
+		double[][] alienLocations = createRandomAlienLocations(12);
+		double[] nonFollowingAliensX = new double[12]; //all the aliens will have a starting horizontal velocity 
+		for (int j = 0; j < 12; j++) {
+			nonFollowingAliensX[j] =  0.0025; //all aliens will have this initial velocity 
+		} 
+		
 		boolean rocketFrozen = false; //whether or not pirate has hit an obstacle
 		boolean missleFired = false; //whether or not J was pressed
 		boolean hasMissle = true;
@@ -221,7 +246,7 @@ public class Main {
 
 			if (missleFired) {
 				missleX = missleFiredX; //makes sure the missle doesn't move with the rocket after being fired
-				missleY += 0.03; //the missle fired will be moving up at constant speed if the missle was fired
+				missleY += 0.02; //the missle fired will be moving up at constant speed if the missle was fired
 
 			}
 
@@ -234,25 +259,25 @@ public class Main {
 			drawMissleAt(missleX,missleY);
 
 			//check if there's a collision between rocket and alien
-			if (alienRocketCollision(rocketX,rocketY,greenAlienLocations)) {
+			if (alienRocketCollision(rocketX,rocketY,alienLocations)) {
 
 				//the for loop below will go through the alienLocations array and check which alien was involved in collision and moves them off screen
 				for (int i = 0; i < 12; i++) {
-					if (Math.sqrt(Math.pow((greenAlienLocations[i][0]-rocketX), 2) + Math.pow((greenAlienLocations[i][1]-rocketY),2)) <= 0.035+0.03) {
-						greenAlienLocations[i][0] = -1;
-						greenAlienLocations[i][1] = -1;
+					if (Math.sqrt(Math.pow((alienLocations[i][0]-rocketX), 2) + Math.pow((alienLocations[i][1]-rocketY),2)) <= 0.035+0.03) {
+						alienLocations[i][0] = -1;
+						alienLocations[i][1] = -1;
 					}
 				}
 				if (rocketLife2 == false) rocketLife1 = false; //if it only has one life left, lose its last life
 				rocketLife2 = false; //lose its first life first
 			}
 
-			if (alienMissleCollision(missleX,missleY,greenAlienLocations)) {
+			if (alienMissleCollision(missleX,missleY,alienLocations)) {
 				if (hasMissle) {
 					for (int i = 0; i < 12; i++) {
-						if (Math.sqrt(Math.pow((greenAlienLocations[i][0]-missleX), 2) + Math.pow((greenAlienLocations[i][1]-missleY),2)) <= 0.035+0.007) {
-							greenAlienLocations[i][0] = -1;
-							greenAlienLocations[i][1] = -1;
+						if (Math.sqrt(Math.pow((alienLocations[i][0]-missleX), 2) + Math.pow((alienLocations[i][1]-missleY),2)) <= 0.035+0.007) {
+							alienLocations[i][0] = -1;
+							alienLocations[i][1] = -1;
 						}
 					}
 					if (rocketLife2 == false) rocketLife1 = false; //if it only has one life left, lose its last life
@@ -260,13 +285,13 @@ public class Main {
 				}
 				//the for loop below will go through the alienLocations array and check which rock was involved in collision and moves them off screen, along with returning missle back to the rocket
 				for (int i = 0; i < 12; i++) {
-					if (Math.sqrt(Math.pow((greenAlienLocations[i][0]-missleX), 2) + Math.pow((greenAlienLocations[i][1]-missleY),2)) <= 0.035+0.007) {
+					if (Math.sqrt(Math.pow((alienLocations[i][0]-missleX), 2) + Math.pow((alienLocations[i][1]-missleY),2)) <= 0.035+0.007) {
 						missleFired = false;
 						hasMissle = true;
 						missleX = rocketX;
 						missleY = rocketY+0.06;
-						greenAlienLocations[i][0] = -1;
-						greenAlienLocations[i][1] = -1;
+						alienLocations[i][0] = -1;
+						alienLocations[i][1] = -1;
 
 					}
 				}
@@ -290,11 +315,25 @@ public class Main {
 
 
 
-			drawGreenAliensAt(greenAlienLocations);
-			advanceGreenAliens(greenAlienLocations,alienThatMoves,rocketX, rocketY);
+			drawGreenAliensAt(alienLocations);
+			advanceGreenAliens(alienLocations, nonFollowingAliensX, alienThatMoves,rocketX, rocketY);
 
-			if (greenAlienLocations[alienThatMoves][1] > 1) alienThatMoves = (int) randomInRange(0,12); //if the previous alien that was moving is off screen, then choose a different alien
+			if (alienLocations[alienThatMoves][1] > 1) alienThatMoves = (int) randomInRange(0,12); //if the previous alien that was moving is off screen, then choose a different alien
 			
+			int index=0; 
+			
+			//this loop will check if each alien is offscreen
+			while(alienLocations[index][1] > 1) { 
+	
+				if (index == 11 ) { //if it reaches the last alien, and they are all offscreen, then respawn them onto screen by creating new random locations
+					alienLocations = createRandomAlienLocations(12);
+					break;
+				}
+				else {
+					index++; 
+				}
+				
+			}
 			
 			
 			StdDraw.show();  
