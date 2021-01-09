@@ -54,49 +54,49 @@ public class Main {
 	 * @param bubbleLocations bubbleLocations array
 	 */
 	public static void advanceGreenAliens(double[][] alienLocations, double[] nonFollowingAliensX, int alienThatFollows1,int alienThatFollows2, double rocketX,double rocketY) {
-		
-		
+
+
 		double movingAlienY1 = randomInRange(-0.005,0);
 		double movingAlienX1 = 0; 
 		double movingAlienY2 = randomInRange(-0.005,0);
 		double movingAlienX2 = 0; 
-		
+
 		for(int i = 0; i < 12; i++) {
 			if (i == alienThatFollows1 || i == alienThatFollows2) { //if it is the alien that is moving, do nothing
 			}							  //otherwise move the other aliens
 			else if (alienLocations[i][0] <= 0.03) { 
-			 nonFollowingAliensX[i] *= -1;
-			 alienLocations[i][0] += nonFollowingAliensX[i];
+				nonFollowingAliensX[i] *= -1;
+				alienLocations[i][0] += nonFollowingAliensX[i];
 			}
 			else if (alienLocations[i][0] >= 0.97){
-			 nonFollowingAliensX[i] *= -1;
-			 alienLocations[i][0] += nonFollowingAliensX[i];
+				nonFollowingAliensX[i] *= -1;
+				alienLocations[i][0] += nonFollowingAliensX[i];
 			}
 			else {
 				alienLocations[i][0] += nonFollowingAliensX[i]; //this moves them in the x direction 
 			}
 		}
-		
-		
+
+
 		if (alienLocations[alienThatFollows1][1] > 1 || alienLocations[alienThatFollows2][1] > 1) { //if it is moved off screen, let it stay off screen
 			return;
 		}
-		
+
 		if (rocketX >alienLocations[alienThatFollows1][0]) { //if rocket is to the right of alien1, alien will move in positive direction
-			 movingAlienX1 = (Math.sqrt(Math.pow((alienLocations[alienThatFollows1][0]-rocketX), 2) + Math.pow((alienLocations[alienThatFollows1][1]-rocketY),2)))/90.0;
+			movingAlienX1 = (Math.sqrt(Math.pow((alienLocations[alienThatFollows1][0]-rocketX), 2) + Math.pow((alienLocations[alienThatFollows1][1]-rocketY),2)))/90.0;
 		}
 		else if (rocketX <alienLocations[alienThatFollows1][0]) { //if rocket is to the left of alien1, alien will move in negative direction
-			 movingAlienX1 = -(Math.sqrt(Math.pow((alienLocations[alienThatFollows1][0]-rocketX), 2) + Math.pow((alienLocations[alienThatFollows1][1]-rocketY),2)))/90.0;
+			movingAlienX1 = -(Math.sqrt(Math.pow((alienLocations[alienThatFollows1][0]-rocketX), 2) + Math.pow((alienLocations[alienThatFollows1][1]-rocketY),2)))/90.0;
 		}
-		
+
 		if (rocketX >alienLocations[alienThatFollows2][0]) { //if rocket is to the right of alien2, alien will move in positive direction
-			 movingAlienX2 = (Math.sqrt(Math.pow((alienLocations[alienThatFollows2][0]-rocketX), 2) + Math.pow((alienLocations[alienThatFollows2][1]-rocketY),2)))/90.0;
+			movingAlienX2 = (Math.sqrt(Math.pow((alienLocations[alienThatFollows2][0]-rocketX), 2) + Math.pow((alienLocations[alienThatFollows2][1]-rocketY),2)))/90.0;
 		}
 		else if (rocketX <alienLocations[alienThatFollows2][0]) { //if rocket is to the left of alien2, alien will move in negative direction
-			 movingAlienX2 = -(Math.sqrt(Math.pow((alienLocations[alienThatFollows2][0]-rocketX), 2) + Math.pow((alienLocations[alienThatFollows2][1]-rocketY),2)))/90.0;
+			movingAlienX2 = -(Math.sqrt(Math.pow((alienLocations[alienThatFollows2][0]-rocketX), 2) + Math.pow((alienLocations[alienThatFollows2][1]-rocketY),2)))/90.0;
 		}
-		
-		
+
+
 		//next few lines of code will ensure that the alien1 will not move off screen in the x direction
 		if (alienLocations[alienThatFollows1][0] <= 0.03) {
 			alienLocations[alienThatFollows1][0] -= movingAlienX1;
@@ -107,13 +107,13 @@ public class Main {
 		else {
 			alienLocations[alienThatFollows1][0] += movingAlienX1; //this moves alien1 in the x direction 
 		}
-		
+
 		alienLocations[alienThatFollows1][1] = alienLocations[alienThatFollows1][1] + movingAlienY1; //moves alien1 in y direction
 
 		if (alienLocations[alienThatFollows1][1] <=0) {
 			alienLocations[alienThatFollows1][1] = 1.2;  //move alien1 that follows off screen
 		}
-		
+
 		//next few lines of code will ensure that the alien1 will not move off screen in the x direction
 		if (alienLocations[alienThatFollows2][0] <= 0.03) {
 			alienLocations[alienThatFollows2][0] -= movingAlienX2;
@@ -124,7 +124,7 @@ public class Main {
 		else {
 			alienLocations[alienThatFollows2][0] += (movingAlienX2-0.001); //this moves alien1 in the x direction 
 		}
-		
+
 		alienLocations[alienThatFollows2][1] = alienLocations[alienThatFollows2][1] + movingAlienY2; //moves alien1 in y direction
 
 		if (alienLocations[alienThatFollows2][1] <=0) {
@@ -185,6 +185,20 @@ public class Main {
 		return false; 
 	}
 
+	public static void drawSlimeAt(double x, double y) {
+		StdDraw.picture(x, y, "images/slime.png", 0.07, 0.07);
+	}
+
+	public static boolean rocketSlimeCollision(double slimeX, double slimeY, double rocketX, double rocketY) {
+
+		if (Math.sqrt(Math.pow((rocketX-slimeX), 2) + Math.pow((rocketY-slimeY),2)) <= 0.035+0.007) {
+			return true;
+		}
+		return false; 
+	}
+	
+	
+
 
 	public static void main(String[] args) {
 
@@ -194,7 +208,9 @@ public class Main {
 		double rocketY = 0.1;  // y location of the rocket
 		double missleX = rocketX; //initial x location of missle 
 		double missleY = rocketY+0.06; //initial y location of missle
-		double missleFiredX = rocketX;
+		double missleFiredX = rocketX; //x location of where missle is fired
+		double slimeX = -1; //slime will be off screen first
+		double slimeY = -1.2; 
 		//
 		// This song will play in the background allowing your other work
 		//   to proceed. 
@@ -214,18 +230,20 @@ public class Main {
 		for (int j = 0; j < 12; j++) {
 			nonFollowingAliensX[j] =  0.0025; //all aliens will have this initial velocity 
 		} 
-		
-		boolean rocketFrozen = false; //whether or not pirate has hit an obstacle
+
+	
 		boolean missleFired = false; //whether or not J was pressed
 		boolean hasMissle = true;
 		boolean rocketLife1 = true;
 		boolean rocketLife2= true;
 		boolean gameOver = false;
+		
 
-		
-		
+
 		int alienThatFollows1 = (int)randomInRange(0,12);
 		int alienThatFollows2 = (int)randomInRange(0,12);
+		int alienThatShoots1 = (int)randomInRange(0,12);
+		int alienThatShoots2 = (int)randomInRange(0,12);
 		
 		while (gameOver == false) {
 
@@ -254,9 +272,9 @@ public class Main {
 
 
 			//
-			// The pirate
+			// rocket
 			//
-			StdDraw.setPenColor(Color.BLACK);
+			
 			StdDraw.picture(rocketX, rocketY, "images/rocket.png", 0.1, 0.1);
 
 
@@ -282,6 +300,14 @@ public class Main {
 			}
 			drawMissleAt(missleX,missleY);
 
+			
+			if (slimeY <= -1) { //if slime is off screen, a new alien will shoot it
+				slimeX = alienLocations[alienThatShoots1][0];
+				slimeY = alienLocations[alienThatShoots1][1];
+			}
+			
+			drawSlimeAt(slimeX,slimeY);
+			slimeY -= 0.01;
 			//check if there's a collision between rocket and alien
 			if (alienRocketCollision(rocketX,rocketY,alienLocations)) {
 
@@ -324,18 +350,6 @@ public class Main {
 			}
 
 
-			if (rocketFrozen){ //if the pirate is frozen after hitting obstacle
-				if ((frozenTime/33+1) == 2) { //after two seconds, the pirate will start moving again
-					rocketFrozen = false;
-					frozenTime = 0; //reset frozenTime to 0 because not frozen anymore
-				}
-				time+=1;
-				frozenTime+=1;
-			}
-			if(rocketFrozen == false) {
-
-				time+=1;
-			}
 
 
 
@@ -345,10 +359,10 @@ public class Main {
 			if (alienLocations[alienThatFollows1][1] > 1) alienThatFollows1 = (int) randomInRange(0,12); //if the previous alien that was moving is off screen, then choose a different alien
 			if (alienLocations[alienThatFollows2][1] > 1) alienThatFollows2 = (int) randomInRange(0,12);
 			int index=0; 
-			
+
 			//this loop will check if each alien is offscreen
 			while(alienLocations[index][1] > 1) { 
-	
+
 				if (index == 11 ) { //if it reaches the last alien, and they are all offscreen, then respawn them onto screen by creating new random locations
 					alienLocations = createRandomAlienLocations(12);
 					break;
@@ -356,10 +370,10 @@ public class Main {
 				else {
 					index++; 
 				}
-				
+
 			}
-			
-			
+
+
 			StdDraw.show();  
 			StdDraw.pause(10);   // 1/100 of a second
 
