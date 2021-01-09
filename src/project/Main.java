@@ -53,17 +53,18 @@ public class Main {
 	 * Takes array of alienLocations and changes their y positions only
 	 * @param bubbleLocations bubbleLocations array
 	 */
-	public static void advanceGreenAliens(double[][] alienLocations, double[] nonFollowingAliensX, int alienThatFollows, double rocketX,double rocketY) {
-		boolean allOffScreen = false;
+	public static void advanceGreenAliens(double[][] alienLocations, double[] nonFollowingAliensX, int alienThatFollows1,int alienThatFollows2, double rocketX,double rocketY) {
+		
 		
 		double movingAlienY1 = randomInRange(-0.005,0);
-		double movingAlienX = 0; 
-		
+		double movingAlienX1 = 0; 
+		double movingAlienY2 = randomInRange(-0.005,0);
+		double movingAlienX2 = 0; 
 		
 		for(int i = 0; i < 12; i++) {
-			if (i == alienThatFollows) { //if it is the alien that is moving 
-			}
-			else if (alienLocations[i][0] <= 0.03) {
+			if (i == alienThatFollows1 || i == alienThatFollows2) { //if it is the alien that is moving, do nothing
+			}							  //otherwise move the other aliens
+			else if (alienLocations[i][0] <= 0.03) { 
 			 nonFollowingAliensX[i] *= -1;
 			 alienLocations[i][0] += nonFollowingAliensX[i];
 			}
@@ -77,37 +78,58 @@ public class Main {
 		}
 		
 		
-		
-		if (alienLocations[alienThatFollows][1] > 1) { //if it is moved off screen, let it stay off screen
+		if (alienLocations[alienThatFollows1][1] > 1 || alienLocations[alienThatFollows2][1] > 1) { //if it is moved off screen, let it stay off screen
 			return;
 		}
 		
-		if (rocketX >alienLocations[alienThatFollows][0]) { //if rocket is to the right of alien, alien will move in positive direction
-			 movingAlienX = (Math.sqrt(Math.pow((alienLocations[alienThatFollows][0]-rocketX), 2) + Math.pow((alienLocations[alienThatFollows][1]-rocketY),2)))/90.0;
+		if (rocketX >alienLocations[alienThatFollows1][0]) { //if rocket is to the right of alien1, alien will move in positive direction
+			 movingAlienX1 = (Math.sqrt(Math.pow((alienLocations[alienThatFollows1][0]-rocketX), 2) + Math.pow((alienLocations[alienThatFollows1][1]-rocketY),2)))/90.0;
 		}
-		else if (rocketX <alienLocations[alienThatFollows][0]) { //if rocket is to the left of alien, alien will move in negative direction
-			 movingAlienX = -(Math.sqrt(Math.pow((alienLocations[alienThatFollows][0]-rocketX), 2) + Math.pow((alienLocations[alienThatFollows][1]-rocketY),2)))/90.0;
+		else if (rocketX <alienLocations[alienThatFollows1][0]) { //if rocket is to the left of alien1, alien will move in negative direction
+			 movingAlienX1 = -(Math.sqrt(Math.pow((alienLocations[alienThatFollows1][0]-rocketX), 2) + Math.pow((alienLocations[alienThatFollows1][1]-rocketY),2)))/90.0;
+		}
+		
+		if (rocketX >alienLocations[alienThatFollows2][0]) { //if rocket is to the right of alien2, alien will move in positive direction
+			 movingAlienX2 = (Math.sqrt(Math.pow((alienLocations[alienThatFollows2][0]-rocketX), 2) + Math.pow((alienLocations[alienThatFollows2][1]-rocketY),2)))/90.0;
+		}
+		else if (rocketX <alienLocations[alienThatFollows2][0]) { //if rocket is to the left of alien2, alien will move in negative direction
+			 movingAlienX2 = -(Math.sqrt(Math.pow((alienLocations[alienThatFollows2][0]-rocketX), 2) + Math.pow((alienLocations[alienThatFollows2][1]-rocketY),2)))/90.0;
 		}
 		
 		
-		//next few lines of code will ensure that the aliens will not move off screen in the x direction
-		if (alienLocations[alienThatFollows][0] <= 0.03) {
-			alienLocations[alienThatFollows][0] -= movingAlienX;
+		//next few lines of code will ensure that the alien1 will not move off screen in the x direction
+		if (alienLocations[alienThatFollows1][0] <= 0.03) {
+			alienLocations[alienThatFollows1][0] -= movingAlienX1;
 		}
-		else if (alienLocations[alienThatFollows][0] >= 0.97){
-			alienLocations[alienThatFollows][0] -= movingAlienX;
+		else if (alienLocations[alienThatFollows1][0] >= 0.97){
+			alienLocations[alienThatFollows1][0] -= movingAlienX1;
 		}
 		else {
-			alienLocations[alienThatFollows][0] += movingAlienX; //this moves them in the x direction 
+			alienLocations[alienThatFollows1][0] += movingAlienX1; //this moves alien1 in the x direction 
 		}
 		
-		alienLocations[alienThatFollows][1] = alienLocations[alienThatFollows][1] + movingAlienY1; //moves alien in y direction
+		alienLocations[alienThatFollows1][1] = alienLocations[alienThatFollows1][1] + movingAlienY1; //moves alien1 in y direction
 
-		if (alienLocations[alienThatFollows][1] <=0) {
-			alienLocations[alienThatFollows][1] = 1.2;  //move alien that follows off screen
+		if (alienLocations[alienThatFollows1][1] <=0) {
+			alienLocations[alienThatFollows1][1] = 1.2;  //move alien1 that follows off screen
 		}
 		
+		//next few lines of code will ensure that the alien1 will not move off screen in the x direction
+		if (alienLocations[alienThatFollows2][0] <= 0.03) {
+			alienLocations[alienThatFollows2][0] -= movingAlienX2;
+		}
+		else if (alienLocations[alienThatFollows2][0] >= 0.97){
+			alienLocations[alienThatFollows2][0] -= movingAlienX2;
+		}
+		else {
+			alienLocations[alienThatFollows2][0] += (movingAlienX2-0.001); //this moves alien1 in the x direction 
+		}
 		
+		alienLocations[alienThatFollows2][1] = alienLocations[alienThatFollows2][1] + movingAlienY2; //moves alien1 in y direction
+
+		if (alienLocations[alienThatFollows2][1] <=0) {
+			alienLocations[alienThatFollows2][1] = 1.2;  //move alien1 that follows off screen
+		}
 
 	}
 	/**
@@ -202,7 +224,9 @@ public class Main {
 
 		
 		
-		int alienThatMoves = (int)randomInRange(0,12);
+		int alienThatFollows1 = (int)randomInRange(0,12);
+		int alienThatFollows2 = (int)randomInRange(0,12);
+		
 		while (gameOver == false) {
 
 			StdDraw.clear();
@@ -316,10 +340,10 @@ public class Main {
 
 
 			drawGreenAliensAt(alienLocations);
-			advanceGreenAliens(alienLocations, nonFollowingAliensX, alienThatMoves,rocketX, rocketY);
+			advanceGreenAliens(alienLocations, nonFollowingAliensX, alienThatFollows1, alienThatFollows2,rocketX, rocketY);
 
-			if (alienLocations[alienThatMoves][1] > 1) alienThatMoves = (int) randomInRange(0,12); //if the previous alien that was moving is off screen, then choose a different alien
-			
+			if (alienLocations[alienThatFollows1][1] > 1) alienThatFollows1 = (int) randomInRange(0,12); //if the previous alien that was moving is off screen, then choose a different alien
+			if (alienLocations[alienThatFollows2][1] > 1) alienThatFollows2 = (int) randomInRange(0,12);
 			int index=0; 
 			
 			//this loop will check if each alien is offscreen
