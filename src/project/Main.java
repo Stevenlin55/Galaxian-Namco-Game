@@ -35,9 +35,9 @@ public class Main {
 
 
 	/**
-	 * Creates random rock locations
+	 * Creates random alien locations
 	 * @param n number of 
-	 * @return 2D array of rock locations
+	 * @return 2D array of alien locations
 	 */
 	public static double[][] createRandomAlienLocations(int n) {
 		double[][] alienLocations = new double[n][2];
@@ -50,8 +50,13 @@ public class Main {
 	}
 
 	/**
-	 * Takes array of alienLocations and changes their y positions only
-	 * @param bubbleLocations bubbleLocations array
+	 * Moves all aliens in a certain way 
+	 * @param alienLocations array of alien locations
+	 * @param nonFollowingAliensX array of the specific aliens that will not follow the rocket
+	 * @param alienThatFollows1 the first alien that follows rocket
+	 * @param alienThatFollows2 the second alien that follows the rocket
+	 * @param rocketX
+	 * @param rocketY
 	 */
 	public static void advanceGreenAliens(double[][] alienLocations, double[] nonFollowingAliensX, int alienThatFollows1,int alienThatFollows2, double rocketX,double rocketY) {
 
@@ -61,7 +66,7 @@ public class Main {
 		double movingAlienY2 = randomInRange(-0.005,0);
 		double movingAlienX2 = 0; 
 
-		for(int i = 0; i < 12; i++) {
+		for(int i = 0; i < 15; i++) {
 			if (i == alienThatFollows1 || i == alienThatFollows2) { //if it is the alien that is moving, do nothing
 			}							  //otherwise move the other aliens
 			else if (alienLocations[i][0] <= 0.03) { 
@@ -111,7 +116,7 @@ public class Main {
 		alienLocations[alienThatFollows1][1] = alienLocations[alienThatFollows1][1] + movingAlienY1; //moves alien1 in y direction
 
 		if (alienLocations[alienThatFollows1][1] <=0) {
-			alienLocations[alienThatFollows1][1] = 1.2;  //move alien1 that follows off screen
+			alienLocations[alienThatFollows1][1] = -1.2;  //move alien1 that follows off screen
 		}
 
 		//next few lines of code will ensure that the alien1 will not move off screen in the x direction
@@ -122,45 +127,45 @@ public class Main {
 			alienLocations[alienThatFollows2][0] -= movingAlienX2;
 		}
 		else {
-			alienLocations[alienThatFollows2][0] += (movingAlienX2-0.001); //this moves alien1 in the x direction 
+			alienLocations[alienThatFollows2][0] += (movingAlienX2-0.001); //this moves alien2 in the x direction 
 		}
 
-		alienLocations[alienThatFollows2][1] = alienLocations[alienThatFollows2][1] + movingAlienY2; //moves alien1 in y direction
+		alienLocations[alienThatFollows2][1] = alienLocations[alienThatFollows2][1] + movingAlienY2; //moves alien2 in y direction
 
 		if (alienLocations[alienThatFollows2][1] <=0) {
-			alienLocations[alienThatFollows2][1] = 1.2;  //move alien1 that follows off screen
+			alienLocations[alienThatFollows2][1] = -1.2;  //move alien2 that follows off screen
 		}
 
 	}
 	/**
 	 * Draws aliens at locations defined in array
-	 * @param greenAlienLocations array of rock locations
+	 * @param alienLocations array of alien locations
 	 */
-	public static void drawGreenAliensAt(double[][] greenAlienLocations) {
+	public static void drawGreenAliensAt(double[][] alienLocations) {
 
-		for (int i=0; i<12; i++) {
-			StdDraw.picture(greenAlienLocations[i][0], greenAlienLocations[i][1], "images/greenAlien.png", 0.08, 0.08);
+		for (int i=0; i<15; i++) {
+			StdDraw.picture(alienLocations[i][0], alienLocations[i][1], "images/greenAlien.png", 0.08, 0.08);
 		}
 	}
 
 	/**
-	 * Draws missles at locations defined by x and y coordinates of pirate
-	 * @param x x-coordinate of pirate
-	 * @param y y-coordinate of pirate
+	 * Draws missles at locations defined by x and y coordinates of rocket
+	 * @param x x-coordinate of rocket
+	 * @param y y-coordinate of rocket
 	 */
 	public static void drawMissleAt(double x, double y) {
 		StdDraw.picture(x, y, "images/missle.png", 0.07, 0.07);
 	}
 
 	/**
-	 * Whether or not the pirate hit the obstacle
-	 * @param rocketX x-coordinate of pirate
-	 * @param rocketY y-coordinate of pirate
-	 * @param greenAlienLocations array of rock locations
+	 * Whether or not the rocket hit the obstacle
+	 * @param rocketX x-coordinate of rocket
+	 * @param rocketY y-coordinate of rocket
+	 * @param greenAlienLocations array of alien locations
 	 * @return true if there is a collision, false if there isn't
 	 */
-	public static boolean alienRocketCollision(double rocketX,double rocketY, double[][] greenAlienLocations) {
-		for (int i = 0; i < 12; i++) {
+	public static boolean alienrocketCollision(double rocketX,double rocketY, double[][] greenAlienLocations) {
+		for (int i = 0; i < 15; i++) {
 			if (Math.sqrt(Math.pow((greenAlienLocations[i][0]-rocketX), 2) + Math.pow((greenAlienLocations[i][1]-rocketY),2)) <= 0.035+0.03) {
 				return true;
 			}
@@ -171,33 +176,65 @@ public class Main {
 
 	/**
 	 * Whether or not the missle hit the obstacle
-	 * @param pirateX x-coordinate of missle
-	 * @param pirateY y-coordinate of missle
-	 * @param rockLocations array of rock locations
+	 * @param rocketX x-coordinate of missle
+	 * @param rocketY y-coordinate of missle
+	 * @param alienLocations array of alien locations
 	 * @return true if there is a collision, false if there isn't
 	 */
-	public static boolean alienMissleCollision(double missleX, double missleY, double[][] rockLocations) {
-		for (int i = 0; i < 12; i++) {
-			if (Math.sqrt(Math.pow((rockLocations[i][0]-missleX), 2) + Math.pow((rockLocations[i][1]-missleY),2)) <= 0.035+0.007) {
+	public static boolean alienMissleCollision(double missleX, double missleY, double[][] alienLocations) {
+		for (int i = 0; i < 15; i++) {
+			if (Math.sqrt(Math.pow((alienLocations[i][0]-missleX), 2) + Math.pow((alienLocations[i][1]-missleY),2)) <= 0.035+0.007) {
 				return true;
 			}
 		}
 		return false; 
 	}
 
-	public static void drawSlimeAt(double x, double y) {
-		StdDraw.picture(x, y, "images/slime.png", 0.07, 0.07);
+	/**
+	 * Draws the 3 slimes at specified coordinates
+	 * @param slimeX1 
+	 * @param slimeY1
+	 * @param slimeX2
+	 * @param slimeY2
+	 * @param slimeX3
+	 * @param slimeY3
+	 */
+	public static void drawSlimeAt(double slimeX1, double slimeY1, double slimeX2, double slimeY2,double slimeX3, double slimeY3) {
+		StdDraw.picture(slimeX1, slimeY1, "images/slime.png", 0.07, 0.07);
+		StdDraw.picture(slimeX2, slimeY2, "images/slime.png", 0.07, 0.07);
+		StdDraw.picture(slimeX3, slimeY3, "images/slime.png", 0.07, 0.07);
 	}
 
-	public static boolean rocketSlimeCollision(double slimeX, double slimeY, double rocketX, double rocketY) {
+	/**
+	 * Whether or not there is a collision bewteen a slime and the rocket
+	 * @param slimeX1
+	 * @param slimeY1
+	 * @param slimeX2
+	 * @param slimeY2
+	 * @param slimeX3
+	 * @param slimeY3
+	 * @param rocketX
+	 * @param rocketY
+	 * @return
+	 */
+	public static boolean rocketSlimeCollision(double slimeX1, double slimeY1,double slimeX2, double slimeY2, double slimeX3, double slimeY3, double rocketX, double rocketY) {
 
-		if (Math.sqrt(Math.pow((rocketX-slimeX), 2) + Math.pow((rocketY-slimeY),2)) <= 0.035+0.007) {
+		if (Math.sqrt(Math.pow((rocketX-slimeX1), 2) + Math.pow((rocketY-slimeY1),2)) <= 0.035+0.007) {
+			return true;
+		}
+		if (Math.sqrt(Math.pow((rocketX-slimeX2), 2) + Math.pow((rocketY-slimeY2),2)) <= 0.035+0.007) {
+			return true;
+		}
+		if (Math.sqrt(Math.pow((rocketX-slimeX3), 2) + Math.pow((rocketY-slimeY3),2)) <= 0.035+0.007) {
+			return true;
+		}
+		if (Math.sqrt(Math.pow((rocketX-slimeX3), 2) + Math.pow((rocketY-slimeY3),2)) <= 0.035+0.007) {
 			return true;
 		}
 		return false; 
 	}
-	
-	
+
+
 
 
 	public static void main(String[] args) {
@@ -209,44 +246,42 @@ public class Main {
 		double missleX = rocketX; //initial x location of missle 
 		double missleY = rocketY+0.06; //initial y location of missle
 		double missleFiredX = rocketX; //x location of where missle is fired
-		double slimeX = -1; //slime will be off screen first
-		double slimeY = -1.2; 
-		//
-		// This song will play in the background allowing your other work
-		//   to proceed. 
-		// If annoyed, comment this out
-		// If you want more, change playOnce() to playAlways()
-		//
-		//		BackgroundSong sbsp = new BackgroundSong("SpongeBobSquarePants.wav");
-		//		sbsp.playOn1=ce();
+		
+		//slimes will be off screen first
+		double slimeX1 = -1; 
+		double slimeY1 = -1.2; 
+		double slimeX2 = -1;
+		double slimeY2 = -1.2;
+		double slimeX3 = -1;
+		double slimeY3 = -1.2;
 
-		int time = 1; //this will be used to help track how many seconds has passed
-		int frozenTime = 0; //time that will be used to keep track of how long the pirate has been frozen for
+	
 		int points = 0;
 
 
-		double[][] alienLocations = createRandomAlienLocations(12);
-		double[] nonFollowingAliensX = new double[12]; //all the aliens will have a starting horizontal velocity 
-		for (int j = 0; j < 12; j++) {
-			nonFollowingAliensX[j] =  0.0025; //all aliens will have this initial velocity 
+		double[][] alienLocations = createRandomAlienLocations(15); //there will be 15 aliens
+		double[] nonFollowingAliensX = new double[15]; //all the aliens will have a starting horizontal velocity 
+		for (int j = 0; j < 15; j++) {
+			nonFollowingAliensX[j] =  0.005; //all aliens will have this initial velocity 
 		} 
 
-	
+
 		boolean missleFired = false; //whether or not J was pressed
 		boolean hasMissle = true;
-		boolean rocketLife1 = true;
+		boolean rocketLife1 = true; //the player will have two lives available
 		boolean rocketLife2= true;
 		boolean gameOver = false;
-		
 
 
-		int alienThatFollows1 = (int)randomInRange(0,12);
-		int alienThatFollows2 = (int)randomInRange(0,12);
-		int alienThatShoots1 = (int)randomInRange(0,12);
-		int alienThatShoots2 = (int)randomInRange(0,12);
-		
+
+		int alienThatFollows1 = (int)randomInRange(0,15); 
+		int alienThatFollows2 = (int)randomInRange(0,15);
+		int alienThatShoots1 = (int)randomInRange(0,15);
+		int alienThatShoots2 = (int)randomInRange(0,15);
+		int alienThatShoots3 = (int)randomInRange(0,15);
+
 		while (gameOver == false) {
-
+		
 			StdDraw.clear();
 
 			StdDraw.picture(0.5, 0.5, "images/space.jpg", 1.2, 1.2);
@@ -271,10 +306,7 @@ public class Main {
 			}
 
 
-			//
-			// rocket
-			//
-			
+			//the rocket
 			StdDraw.picture(rocketX, rocketY, "images/rocket.png", 0.1, 0.1);
 
 
@@ -300,19 +332,42 @@ public class Main {
 			}
 			drawMissleAt(missleX,missleY);
 
-			
-			if (slimeY <= -1) { //if slime is off screen, a new alien will shoot it
-				slimeX = alienLocations[alienThatShoots1][0];
-				slimeY = alienLocations[alienThatShoots1][1];
+			if (alienLocations[alienThatShoots1][1]<0) { //helps slime appear more often
+				alienThatShoots1 = (int) randomInRange(0,15);
+				if (alienThatShoots1 == alienThatShoots2) {
+					alienThatShoots1 = (int) randomInRange(0,15);
+				}
 			}
-			
-			drawSlimeAt(slimeX,slimeY);
-			slimeY -= 0.01;
+			if (alienLocations[alienThatShoots2][1] <0) { //helps have slimes appear more often
+				alienThatShoots2 = (int) randomInRange(0,15);
+				if (alienThatShoots1 == alienThatShoots2) {
+					alienThatShoots2 = (int) randomInRange(0,15);
+				}
+
+			}
+		
+			drawSlimeAt(slimeX1,slimeY1,slimeX2,slimeY2,slimeX3,slimeY3);
+			if (slimeY1 <= -1) { //if slime1 is off screen, a new alien will shoot it
+				slimeX1 = alienLocations[alienThatShoots1][0];
+				slimeY1 = alienLocations[alienThatShoots1][1];
+			}
+			if (slimeY2 <= -1) { //if slime2 is off screen, a new alien will shoot it
+				slimeX2 = alienLocations[alienThatShoots2][0];
+				slimeY2 = alienLocations[alienThatShoots2][1];
+			}
+			if (slimeY3 <= -1) { //if slime2 is off screen, a new alien will shoot it
+				slimeX3 = alienLocations[alienThatShoots3][0];
+				slimeY3 = alienLocations[alienThatShoots3][1];
+			}
+			//velocites of the slimes
+			slimeY1 -= 0.01; 
+			slimeY2 -= 0.01;
+			slimeY3 -= 0.01;
 			//check if there's a collision between rocket and alien
-			if (alienRocketCollision(rocketX,rocketY,alienLocations)) {
+			if (alienrocketCollision(rocketX,rocketY,alienLocations)) {
 
 				//the for loop below will go through the alienLocations array and check which alien was involved in collision and moves them off screen
-				for (int i = 0; i < 12; i++) {
+				for (int i = 0; i < 15; i++) {
 					if (Math.sqrt(Math.pow((alienLocations[i][0]-rocketX), 2) + Math.pow((alienLocations[i][1]-rocketY),2)) <= 0.035+0.03) {
 						alienLocations[i][0] = -1;
 						alienLocations[i][1] = -1;
@@ -324,7 +379,7 @@ public class Main {
 
 			if (alienMissleCollision(missleX,missleY,alienLocations)) {
 				if (hasMissle) {
-					for (int i = 0; i < 12; i++) {
+					for (int i = 0; i < 15; i++) {
 						if (Math.sqrt(Math.pow((alienLocations[i][0]-missleX), 2) + Math.pow((alienLocations[i][1]-missleY),2)) <= 0.035+0.007) {
 							alienLocations[i][0] = -1;
 							alienLocations[i][1] = -1;
@@ -333,8 +388,8 @@ public class Main {
 					if (rocketLife2 == false) rocketLife1 = false; //if it only has one life left, lose its last life
 					rocketLife2 = false; //lose its first life first
 				}
-				//the for loop below will go through the alienLocations array and check which rock was involved in collision and moves them off screen, along with returning missle back to the rocket
-				for (int i = 0; i < 12; i++) {
+				//the for loop below will go through the alienLocations array and check which alien was involved in collision and moves them off screen, along with returning missle back to the rocket
+				for (int i = 0; i < 15; i++) {
 					if (Math.sqrt(Math.pow((alienLocations[i][0]-missleX), 2) + Math.pow((alienLocations[i][1]-missleY),2)) <= 0.035+0.007) {
 						missleFired = false;
 						hasMissle = true;
@@ -349,36 +404,61 @@ public class Main {
 				points++;
 			}
 
-
-
-
-
-			drawGreenAliensAt(alienLocations);
-			advanceGreenAliens(alienLocations, nonFollowingAliensX, alienThatFollows1, alienThatFollows2,rocketX, rocketY);
-
-			if (alienLocations[alienThatFollows1][1] > 1) alienThatFollows1 = (int) randomInRange(0,12); //if the previous alien that was moving is off screen, then choose a different alien
-			if (alienLocations[alienThatFollows2][1] > 1) alienThatFollows2 = (int) randomInRange(0,12);
-			int index=0; 
-
-			//this loop will check if each alien is offscreen
-			while(alienLocations[index][1] > 1) { 
-
-				if (index == 11 ) { //if it reaches the last alien, and they are all offscreen, then respawn them onto screen by creating new random locations
-					alienLocations = createRandomAlienLocations(12);
-					break;
+			if (rocketSlimeCollision(slimeX1,slimeY1,slimeX2,slimeY2,slimeX3,slimeY3, rocketX,rocketY)) {
+				if (Math.sqrt(Math.pow((rocketX-slimeX1), 2) + Math.pow((rocketY-slimeY1),2)) <= 0.035+0.007) { //if collision with slime1, move it off screen 
+					slimeX1 = -1;
+					slimeY1 = -1.2;
 				}
-				else {
-					index++; 
+				if (Math.sqrt(Math.pow((rocketX-slimeX2), 2) + Math.pow((rocketY-slimeY2),2)) <= 0.035+0.007) {//if collision with slime2, move it off screen
+					slimeX2 = -1;
+					slimeY2 = -1.2;
 				}
-
+				if (Math.sqrt(Math.pow((rocketX-slimeX3), 2) + Math.pow((rocketY-slimeY3),2)) <= 0.035+0.007) {//if collision with slime3, move it off screen
+					slimeX3 = -1;
+					slimeY3 = -1.2;
+				}
+				if (rocketLife2 == false) rocketLife1 = false; //if it only has one life left, lose its last life
+				rocketLife2 = false; //lose its first life first
 			}
 
+		
 
-			StdDraw.show();  
-			StdDraw.pause(10);   // 1/100 of a second
+		drawGreenAliensAt(alienLocations);
+		advanceGreenAliens(alienLocations, nonFollowingAliensX, alienThatFollows1, alienThatFollows2,rocketX, rocketY);
+
+		if (alienLocations[alienThatFollows1][1] < 0) alienThatFollows1 = (int) randomInRange(0,15); //if the previous alien that was moving is off screen, then choose a different alien
+		if (alienLocations[alienThatFollows2][1] < 0) alienThatFollows2 = (int) randomInRange(0,15);
+		int index=0; 
+
+		//this loop will check if each alien is offscreen
+		while(alienLocations[index][1] < 0) { 
+
+			if (index == 14 ) { //if it reaches the last alien, and they are all offscreen, then respawn them onto screen by creating new random locations
+				alienLocations = createRandomAlienLocations(15);
+				break;
+			}
+			else {
+				index++; 
+			}
 
 		}
 
+
+		StdDraw.show();  
+		StdDraw.pause(10);   // 1/100 of a second
+	
+
+		}
+		
+		StdDraw.clear();
+		
+		//the game over screen that also displays the score
+		StdDraw.picture(0.5, 0.5, "images/space.jpg", 1.2, 1.2);
+		StdDraw.setPenColor(Color.WHITE);
+		StdDraw.text(0.5, 0.7, "GAME OVER");
+		StdDraw.setPenColor(Color.RED);
+		StdDraw.text(0.5, 0.5, "Score: " + points);
+		StdDraw.show();
 	}
 
 	/**
