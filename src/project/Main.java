@@ -246,7 +246,7 @@ public class Main {
 		double missleX = rocketX; //initial x location of missle 
 		double missleY = rocketY+0.06; //initial y location of missle
 		double missleFiredX = rocketX; //x location of where missle is fired
-		
+
 		//slimes will be off screen first
 		double slimeX1 = -1; 
 		double slimeY1 = -1.2; 
@@ -255,7 +255,7 @@ public class Main {
 		double slimeX3 = -1;
 		double slimeY3 = -1.2;
 
-	
+
 		int points = 0;
 
 
@@ -281,7 +281,7 @@ public class Main {
 		int alienThatShoots3 = (int)randomInRange(0,15);
 
 		while (gameOver == false) {
-		
+
 			StdDraw.clear();
 
 			StdDraw.picture(0.5, 0.5, "images/space.jpg", 1.2, 1.2);
@@ -345,7 +345,7 @@ public class Main {
 				}
 
 			}
-		
+
 			drawSlimeAt(slimeX1,slimeY1,slimeX2,slimeY2,slimeX3,slimeY3);
 			if (slimeY1 <= -1) { //if slime1 is off screen, a new alien will shoot it
 				slimeX1 = alienLocations[alienThatShoots1][0];
@@ -389,7 +389,7 @@ public class Main {
 					rocketLife2 = false; //lose its first life first
 				}
 				//the for loop below will go through the alienLocations array and check which alien was involved in collision and moves them off screen, along with returning missle back to the rocket
-				for (int i = 0; i < 15; i++) {
+				else {	for (int i = 0; i < 15; i++) {
 					if (Math.sqrt(Math.pow((alienLocations[i][0]-missleX), 2) + Math.pow((alienLocations[i][1]-missleY),2)) <= 0.035+0.007) {
 						missleFired = false;
 						hasMissle = true;
@@ -399,11 +399,11 @@ public class Main {
 						alienLocations[i][1] = -1;
 
 					}
+
 				}
-
-				points++;
+					points++;
+				}
 			}
-
 			if (rocketSlimeCollision(slimeX1,slimeY1,slimeX2,slimeY2,slimeX3,slimeY3, rocketX,rocketY)) {
 				if (Math.sqrt(Math.pow((rocketX-slimeX1), 2) + Math.pow((rocketY-slimeY1),2)) <= 0.035+0.007) { //if collision with slime1, move it off screen 
 					slimeX1 = -1;
@@ -421,37 +421,37 @@ public class Main {
 				rocketLife2 = false; //lose its first life first
 			}
 
-		
 
-		drawGreenAliensAt(alienLocations);
-		advanceGreenAliens(alienLocations, nonFollowingAliensX, alienThatFollows1, alienThatFollows2,rocketX, rocketY);
 
-		if (alienLocations[alienThatFollows1][1] < 0) alienThatFollows1 = (int) randomInRange(0,15); //if the previous alien that was moving is off screen, then choose a different alien
-		if (alienLocations[alienThatFollows2][1] < 0) alienThatFollows2 = (int) randomInRange(0,15);
-		int index=0; 
+			drawGreenAliensAt(alienLocations);
+			advanceGreenAliens(alienLocations, nonFollowingAliensX, alienThatFollows1, alienThatFollows2,rocketX, rocketY);
 
-		//this loop will check if each alien is offscreen
-		while(alienLocations[index][1] < 0) { 
+			if (alienLocations[alienThatFollows1][1] < 0) alienThatFollows1 = (int) randomInRange(0,15); //if the previous alien that was moving is off screen, then choose a different alien
+			if (alienLocations[alienThatFollows2][1] < 0) alienThatFollows2 = (int) randomInRange(0,15);
+			int index=0; 
 
-			if (index == 14 ) { //if it reaches the last alien, and they are all offscreen, then respawn them onto screen by creating new random locations
-				alienLocations = createRandomAlienLocations(15);
-				break;
+			//this loop will check if each alien is offscreen
+			while(alienLocations[index][1] < 0) { 
+
+				if (index == 14 ) { //if it reaches the last alien, and they are all offscreen, then respawn them onto screen by creating new random locations
+					alienLocations = createRandomAlienLocations(15);
+					break;
+				}
+				else {
+					index++; 
+				}
+
 			}
-			else {
-				index++; 
-			}
+
+
+			StdDraw.show();  
+			StdDraw.pause(10);   // 1/100 of a second
+
 
 		}
 
-
-		StdDraw.show();  
-		StdDraw.pause(10);   // 1/100 of a second
-	
-
-		}
-		
 		StdDraw.clear();
-		
+
 		//the game over screen that also displays the score
 		StdDraw.picture(0.5, 0.5, "images/space.jpg", 1.2, 1.2);
 		StdDraw.setPenColor(Color.WHITE);
