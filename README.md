@@ -1,5 +1,5 @@
 # Galaxian-Namco-Game
-Galaxian is a 1979 fixed shooter game developed by Namco. I recreated this game for my dad who used to love to play this game.
+Galaxian is a 1979 fixed shooter game developed by Namco
 
 
 How to run the game:
